@@ -8,6 +8,7 @@ import java.util.HashSet;
 import org.json.JSONObject;
 import utils.Filter;
 import utils.Info;
+import utils.State;
 
 
 // Commands of navigation:
@@ -39,21 +40,21 @@ public class Main {
         int current_env = 1;
         int current_ent = -1;
         boolean env = true;
+
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
         Info info = new Info(loadJSON());
-        Filter filter = new Filter();
+        Filter filter = new Filter(env, current_env, current_ent);
 
         while (true) {
 
-            info.printColumns(current_env, filter.getCurrent());
             if(env){
+                info.printColumns(current_env, filter.getCurrent());
                 info.printEntities(current_env, filter.getCurrent());
             }
-            else{
+            else {
                 info.printEntity(current_env, current_ent);
             }
-
 
             System.out.print("\nEnter command: ");
             String input;
@@ -72,6 +73,7 @@ public class Main {
                 String value;
                 String type;
                 int int_value;
+                boolean back = false;
 
                 switch (command) {
                     case "exit":
@@ -139,13 +141,20 @@ public class Main {
                         break;
 
                     case "goback":
-                        System.out.println("Restoring previous environment...");
+                        back = true;
+                        State prev_state = filter.prevState();
+                        env = prev_state.getIsEnv();
+                        current_env = prev_state.getCurrentEnv();
+                        current_ent = prev_state.getCurrentEnt();
                         break;
 
                     default:
                         System.out.println("Invalid command. Try again.");
                 }
 
+                if(!back){
+                    filter.saveState(env, current_env, current_ent);
+                }
             }
             catch (IOException e) {
                 System.out.println("Error reading input: " + e.getMessage());

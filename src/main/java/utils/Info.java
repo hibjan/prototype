@@ -166,20 +166,7 @@ public class Info {
     }
 
     public void printColumns(int env, HashMap<Integer, HashMap<String, HashMap<String, HashSet<String>>>> filters){
-        System.out.println();
-
-        StringBuilder sb_env = new StringBuilder();
-        sb_env.append("[");
-        boolean first = true;
-        for(Integer environ : this.envs.keySet()){
-            String name = this.envs.get(environ);
-            sb_env.append(first ? " " : ", ").append(environ == env ? BOLD + UNDERLINE + name + " (" + environ + ")" + RESET : name);
-            if(first){
-                first = false;
-            }
-        }
-        sb_env.append(" ]");
-        System.out.println(sb_env);
+        printEnv(env);
 
         int colWidth = this.column_width.get(env);
         int rows = this.rows.get(env);
@@ -256,7 +243,7 @@ public class Info {
                             if(type.equals("m")){
                                 if(env_filter.equals(env)){
                                     if(result.isEmpty()){
-                                        result = metadata_map.get(env_filter).get(filter).get(value);
+                                        result = new HashSet<>(metadata_map.get(env_filter).get(filter).get(value));
                                     }
                                     else {
                                         result.retainAll(metadata_map.get(env_filter).get(filter).get(value));
@@ -267,7 +254,7 @@ public class Info {
                                     for(Integer id : metadata_map.get(env_filter).get(filter).get(value)){
                                         for(String reason : references_map.get(env_filter).get(id).get(env).keySet()){
                                             if(trans.isEmpty()){
-                                                trans = references_map.get(env_filter).get(id).get(env).get(reason);
+                                                trans = new HashSet<>(references_map.get(env_filter).get(id).get(env).get(reason));
                                             }
                                             else {
                                                 trans.addAll(references_map.get(env_filter).get(id).get(env).get(reason));
@@ -285,7 +272,7 @@ public class Info {
                             else if(type.equals("r")){
                                 if(!env_filter.equals(env)){
                                     if(result.isEmpty()){
-                                        result = references_map.get(env_filter).get(Integer.parseInt(value)).get(env).get(filter);
+                                        result = new HashSet<>(references_map.get(env_filter).get(Integer.parseInt(value)).get(env).get(filter));
                                     }
                                     else {
                                         result.retainAll(references_map.get(env_filter).get(Integer.parseInt(value)).get(env).get(filter));
@@ -314,6 +301,8 @@ public class Info {
     }
 
     public void printEntity(int currentEnv, int id) {
+        printEnv(currentEnv);
+
         for(String content : contents_map.get(currentEnv).get(id).keySet()){
             String value = contents_map.get(currentEnv).get(id).get(content);
             System.out.println(UNDERLINE + content + RESET + ": " + value);
@@ -329,5 +318,23 @@ public class Info {
                 }
             }
         }
+    }
+
+    private void printEnv(int env){
+        System.out.println();
+
+        StringBuilder sb_env = new StringBuilder();
+        sb_env.append("[");
+        boolean first = true;
+        for(Integer environ : this.envs.keySet()){
+            String name = this.envs.get(environ);
+            sb_env.append(first ? " " : ", ").append(environ == env ? BOLD + UNDERLINE + name + " (" + environ + ")" + RESET : name);
+            if(first){
+                first = false;
+            }
+        }
+        sb_env.append(" ]");
+        System.out.println(sb_env);
+        System.out.println();
     }
 }

@@ -2,6 +2,7 @@ package utils;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Stack;
 
 public class Filter {
     // ENV (1=Movies) ->
@@ -9,9 +10,25 @@ public class Filter {
     // Filter (Genre / Director) ->
     // Values (Action / 108)
     private HashMap<Integer, HashMap<String, HashMap<String, HashSet<String>>>> filters = new HashMap<>();
+    private Stack<State> states_stack;
+    private State prev;
 
-    public Filter(){
+    public Filter(boolean isEnv, int currentEnv, int currentEnt){
         this.filters = new HashMap<>();
+        this.states_stack = new Stack<>();
+        this.prev = new State(isEnv, currentEnv, currentEnt, this.filters);
+    }
+
+    public void saveState(boolean isEnv, int currentEnv, int currentEnt) {
+        states_stack.push(this.prev);
+        this.prev = new State(isEnv, currentEnv, currentEnt, this.filters);
+    }
+
+    public State prevState(){
+        State prev_state = states_stack.pop();
+        this.filters = prev_state.getFilters();
+        this.prev = prev_state;
+        return prev_state;
     }
 
     public HashMap<Integer, HashMap<String, HashMap<String, HashSet<String>>>> getCurrent(){
