@@ -1,0 +1,484 @@
+{
+   "collections":[
+        {
+            "name": "Artists",
+            "id": 1
+        },
+        {
+            "name": "Works",
+            "id": 2
+        },
+        {
+            "name": "Museums",
+            "id": 3
+        }
+    ],
+   "objects":[
+    {
+        "id": 1,
+        "collection_id": 1,
+        "metadata":{
+            "Nationality":[
+                "Japanese"
+            ]
+        },
+        "references":[
+            {
+                "reason": "Work",
+                "reference_id": 8,
+                "reference_collection_id": 2
+            },
+            {
+                "reason": "Work",
+                "reference_id": 9,
+                "reference_collection_id": 2
+            }
+        ],
+        "contents":{
+            "name": "Ishida Tetsuya",
+            "content1": "Known for dark, surreal paintings that depict the alienation of modern Japanese life, often blending human figures with machines, classrooms, and everyday objects."
+        }
+    },
+    {
+        "id": 2,
+        "collection_id": 1,
+        "metadata":{
+            "Nationality":[
+                "French"
+            ]
+        },
+        "references":[
+            {
+                "reason": "Work",
+                "reference_id": 4,
+                "reference_collection_id": 2
+            },
+            {
+                "reason": "Work",
+                "reference_id": 5,
+                "reference_collection_id": 2
+            }
+        ],
+        "contents":{
+            "name": "Eugène Delacroix",
+            "content1": "A leading Romantic painter, celebrated for his dynamic compositions, expressive brushwork, and themes of passion, revolution, and the exotic."
+        }
+    },
+    {
+        "id": 3,
+        "collection_id": 1,
+        "metadata":{
+            "Nationality":[
+                "Belgian"
+            ]
+        },
+        "references":[
+            {
+                "reason": "Work",
+                "reference_id": 6,
+                "reference_collection_id": 2
+            },
+            {
+                "reason": "Work",
+                "reference_id": 7,
+                "reference_collection_id": 2
+            }
+        ],
+        "contents":{
+            "name": "René Magritte",
+            "description": "Famous for witty and thought-provoking images that challenge perception and reality, often juxtaposing ordinary objects in unexpected contexts."
+        }
+    },
+    {
+        "id": 4,
+        "collection_id": 1,
+        "metadata":{
+            "Nationality":[
+                "Spanish"
+            ]
+        },
+        "references":[
+            {
+                "reason": "Work",
+                "reference_id": 1,
+                "reference_collection_id": 2
+            },
+            {
+                "reason": "Work",
+                "reference_id": 2,
+                "reference_collection_id": 2
+            },
+            {
+                "reason": "Work",
+                "reference_id": 3,
+                "reference_collection_id": 2
+            }
+        ],
+        "contents":{
+            "name": "Pablo Picasso",
+            "description": "One of the most influential artists of the 20th century, constantly reinventing his style; best known for co-founding Cubism and works like Guernica."
+        }
+    },
+    {
+        "id": 1,
+        "collection_id": 2,
+        "metadata":{
+            "Year":[
+                "1937"
+            ],
+            "Medium":[
+                "Oil on canvas"
+            ],
+            "Style":[
+                "Cubism",
+                "Surrealism",
+                "Political Art"
+            ]
+        },
+        "references":[
+            {
+                "reason": "Artist",
+                "reference_id": 4,
+                "reference_collection_id": 1
+            },
+            {
+                "reason": "Location",
+                "reference_id": 1,
+                "reference_collection_id": 3
+            }
+        ],
+        "contents":{
+            "name": "Guernica",
+            "description": "Monumental black, white, and gray mural depicting the horrors of the bombing of Guernica during the Spanish Civil War."
+        }
+    },
+    {
+        "id": 2,
+        "collection_id": 2,
+        "metadata":{
+            "Year":[
+                "1967"
+            ],
+            "Medium":[
+                "Corrosive-resistant steel"
+            ],
+            "Style":[
+                "Cubism",
+                "Abstract sculpture"
+            ]
+        },
+        "references":[
+            {
+                "reason": "Artist",
+                "reference_id": 4,
+                "reference_collection_id": 1
+            }
+        ],
+        "contents":{
+            "name": "Chicago Picasso",
+            "description": "50-foot abstract steel sculpture, often interpreted as a woman, bird, or baboon"
+        }
+    },
+    {
+        "id": 3,
+        "collection_id": 2,
+        "metadata":{
+            "Year":[
+                "1937"
+            ],
+            "Medium":[
+                "Oil on canvas"
+            ],
+            "Style":[
+                "Cubism"
+            ]
+        },
+        "references":[
+            {
+                "reason": "Artist",
+                "reference_id": 4,
+                "reference_collection_id": 1
+            },
+            {
+                "reason": "Location",
+                "reference_id": 1,
+                "reference_collection_id": 3
+            }
+        ],
+        "contents":{
+            "name": "The Weeping Woman",
+            "description": "Portrait of Dora Maar with distorted, fragmented features expressing grief."
+        }
+    },
+    {
+        "id": 4,
+        "collection_id": 2,
+        "metadata":{
+            "Year":[
+                "1822"
+            ],
+            "Medium":[
+                "Oil on canvas"
+            ],
+            "Style":[
+                "Romanticism"
+            ]
+        },
+        "references":[
+            {
+                "reason": "Artist",
+                "reference_id": 2,
+                "reference_collection_id": 1
+            },
+            {
+                "reason": "Location",
+                "reference_id": 3,
+                "reference_collection_id": 3
+            }
+        ],
+        "contents":{
+            "name": "The Barque of Dante",
+            "description": "Dramatic scene of Dante and Virgil in a boat amid tormented souls on the River Styx."
+        }
+    },
+    {
+        "id": 5,
+        "collection_id": 2,
+        "metadata":{
+            "Year":[
+                "1830"
+            ],
+            "Medium":[
+                "Oil on canvas"
+            ],
+            "Style":[
+                "Romanticism"
+            ]
+        },
+        "references":[
+            {
+                "reason": "Artist",
+                "reference_id": 2,
+                "reference_collection_id": 1
+            },
+            {
+                "reason": "Location",
+                "reference_id": 3,
+                "reference_collection_id": 3
+            }
+        ],
+        "contents":{
+            "name": "Liberty Leading the People",
+            "description": "Allegorical female figure of Liberty leading revolutionaries over barricades during the July Revolution in France."
+        }
+    },
+    {
+        "id": 6,
+        "collection_id": 2,
+        "metadata":{
+            "Year":[
+                "1964"
+            ],
+            "Medium":[
+                "Oil on canvas"
+            ],
+            "Style":[
+                "Surrealism"
+            ]
+        },
+        "references":[
+            {
+                "reason": "Artist",
+                "reference_id": 3,
+                "reference_collection_id": 1
+            }
+        ],
+        "contents":{
+            "name": "The Son of Man",
+            "description": "Man in suit and bowler hat with his face obscured by a hovering green apple."
+        }
+    },
+    {
+        "id": 7,
+        "collection_id": 2,
+        "metadata":{
+            "Year":[
+                "1929"
+            ],
+            "Medium":[
+                "Oil on canvas"
+            ],
+            "Style":[
+                "Surrealism"
+            ]
+        },
+        "references":[
+            {
+                "reason": "Artist",
+                "reference_id": 3,
+                "reference_collection_id": 1
+            },
+            {
+                "reason": "Location",
+                "reference_id": 4,
+                "reference_collection_id": 3
+            }
+        ],
+        "contents":{
+            "name": "The Treachery of Images",
+            "description": "Painting of a pipe with the text “Ceci n'est pas une pipe” (“This is not a pipe”), questioning representation"
+        }
+    },
+    {
+        "id": 8,
+        "collection_id": 2,
+        "metadata":{
+            "Year":[
+                "1996"
+            ],
+            "Medium":[
+                "Acrylic on board"
+            ],
+            "Style":[
+                "Surrealism",
+                "Social Commentary"
+            ]
+        },
+        "references":[
+            {
+                "reason": "Artist",
+                "reference_id": 1,
+                "reference_collection_id": 1
+            }
+        ],
+        "contents":{
+            "name": "A Man Can't Fly Anymore",
+            "description": "A man, often in a uniform-like suit, depicted in a situation evoking entrapment and loss of individuality."
+        }
+    },
+    {
+        "id": 9,
+        "collection_id": 2,
+        "metadata":{
+            "Year":[
+                "1996"
+            ],
+            "Medium":[
+                "Acrylic on board"
+            ],
+            "Style":[
+                "Surrealism",
+                "Social Realism"
+            ]
+        },
+        "references":[
+            {
+                "reason": "Artist",
+                "reference_id": 1,
+                "reference_collection_id": 1
+            }
+        ],
+        "contents":{
+            "name": "Toyota Ipsum",
+            "description": "A surreal depiction of a man fused with a Toyota Ipsum car, reflecting dehumanization in modern society"
+        }
+    },
+    {
+        "id": 1,
+        "collection_id": 3,
+        "metadata":{
+            "Country":[
+                "Spain"
+            ],
+            "Founded":[
+                "1992"
+            ]
+        },
+        "references":[
+            {
+                "reason": "Location",
+                "reference_id": 1,
+                "reference_collection_id": 2
+            }
+        ],
+        "contents":{
+            "name": "Museo Nacional Centro de Arte Reina Sofía",
+            "description": "Spain's national museum of 20th-century art, best known for its collection of Spanish modern masters like Picasso's Guernica, Salvador Dalí, and Joan Miró."
+        }
+    },
+    {
+        "id": 2,
+        "collection_id": 3,
+        "metadata":{
+            "Country":[
+                "United Kingdom"
+            ],
+            "Founded":[
+                "2000"
+            ]
+        },
+        "references":[
+            {
+                "reason": "Location",
+                "reference_id": 3,
+                "reference_collection_id": 2
+            }
+        ],
+        "contents":{
+            "name": "Tate Modern",
+            "description": "A leading modern and contemporary art museum housed in a former power station on the Thames, showcasing works from Picasso and Warhol to cutting-edge contemporary artists."
+        }
+    },
+    {
+        "id": 3,
+        "collection_id": 3,
+        "metadata":{
+            "Country":[
+                "France"
+            ],
+            "Founded":[
+                "1793"
+            ]
+        },
+        "references":[
+            {
+                "reason": "Location",
+                "reference_id": 4,
+                "reference_collection_id": 2
+            },
+            {
+                "reason": "Location",
+                "reference_id": 5,
+                "reference_collection_id": 2
+            }
+        ],
+        "contents":{
+            "name": "Louvre",
+            "description": "One of the world's most famous museums, known for its vast collection of art and artifacts, including the Mona Lisa and the Venus de Milo. It covers thousands of years of history across many civilizations."
+        }
+    },
+    {
+        "id": 4,
+        "collection_id": 3,
+        "metadata":{
+            "Country":[
+                "United States"
+            ],
+            "Founded":[
+                "1910"
+            ]
+        },
+        "references":[
+            {
+                "reason": "Location",
+                "reference_id": 7,
+                "reference_collection_id": 2
+            }
+        ],
+        "contents":{
+            "name": "Los Angeles County Museum of Art",
+            "description": "The largest art museum in the western United States, featuring a vast collection that spans ancient times to contemporary art, with a focus on diverse cultures and modern works."
+        }
+    }
+    ]
+}

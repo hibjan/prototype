@@ -167,7 +167,8 @@ public class Main {
 
     private static JSONObject loadJSON(){
         try {
-            String filePath = "src/main/resources/films_dataset.json";
+            //String filePath = "src/main/resources/films_dataset.json";
+            String filePath = "src/main/resources/test.json";
             String content = new String(Files.readAllBytes(Paths.get(filePath)));
 
             return new JSONObject(content);

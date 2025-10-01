@@ -17,6 +17,11 @@ public class Info {
     // Set of IDs from ENV (Movies with Action Genre)
     private HashMap<Integer, HashMap<String, HashMap<String, HashSet<Integer>>>> metadata_map;
     // ENV (1=Movies) ->
+    // Entity ID (1="X) ->
+    // Field name ->
+    // Set of values
+    private HashMap<Integer, HashMap<Integer, HashMap<String, HashSet<String>>>> metadata;
+    // ENV (1=Movies) ->
     // Entity ID (1="X") ->
     // ENV Reference ID (2=People) ->
     // Reason ("Actor") ->
@@ -48,6 +53,7 @@ public class Info {
     public Info(JSONObject dataset){
         this.contents_map = new HashMap<>();
         this.metadata_map = new HashMap<>();
+        this.metadata = new HashMap<>();
         this.references_map = new HashMap<>();
 
         this.columns = new HashMap<>();
@@ -67,6 +73,7 @@ public class Info {
 
             contents_map.put((Integer) collection.get("id"), new HashMap<>());
             metadata_map.put((Integer) collection.get("id"), new HashMap<>());
+            metadata.put((Integer) collection.get("id"), new HashMap<>());
             references_map.put((Integer) collection.get("id"), new HashMap<>());
 
             columns.put((Integer) collection.get("id"), new HashMap<>());
@@ -93,7 +100,11 @@ public class Info {
             //METADATA
             JSONObject metadata = (JSONObject) object.get("metadata");
 
+            this.metadata.get((Integer) object.get("collection_id")).put((Integer) object.get("id"), new HashMap<>());
+
             for (String key : metadata.keySet()) {
+                this.metadata.get((Integer) object.get("collection_id")).get((Integer) object.get("id")).put(key, new HashSet<>());
+
                 if(!metadata_map.get((Integer) object.get("collection_id")).containsKey(key)) {
                     metadata_map.get((Integer) object.get("collection_id")).put(key, new HashMap<>());
                 }
@@ -109,6 +120,8 @@ public class Info {
                 JSONArray metadata_values = (JSONArray) metadata.get(key);
 
                 for(int j = 0; j < metadata_values.length(); j++){
+                    this.metadata.get((Integer) object.get("collection_id")).get((Integer) object.get("id")).get(key).add((String) metadata_values.get(j));
+
                     if(!metadata_map.get((Integer) object.get("collection_id")).get(key).containsKey((String) metadata_values.get(j))) {
                         metadata_map.get((Integer) object.get("collection_id")).get(key).put((String) metadata_values.get(j), new HashSet<>());
                     }
@@ -145,17 +158,31 @@ public class Info {
                 }
 
                 references_map.get((Integer) object.get("collection_id")).get((Integer) object.get("id")).get((Integer) reference.get("reference_collection_id")).get((String) reference.get("reason")).add((Integer) reference.get("reference_id"));
+            }
+        }
+
+        //Get reference columns
+        for(int i = 0; i < objects.length(); i++){
+            JSONObject object = (JSONObject) objects.get(i);
+
+            //REFERENCES
+            JSONArray references = (JSONArray) object.get("references");
+
+            for(int j = 0; j < references.length(); j++) {
+                JSONObject reference = (JSONObject) references.get(j);
 
                 //column
-                if(!columns.get((Integer) object.get("collection_id")).containsKey((String) reference.get("reason"))) {
-                    columns.get((Integer) object.get("collection_id")).put((String) reference.get("reason"), new TreeSet<>());
+                String column_name = reference.get("reason").toString() + " (" + reference.get("reference_collection_id").toString() + ")";
+                if(!columns.get((Integer) object.get("collection_id")).containsKey(column_name)) {
+                    columns.get((Integer) object.get("collection_id")).put(column_name, new TreeSet<>());
                     column_type.get((Integer) object.get("collection_id")).put((String) reference.get("reason"), "r");
                     column_width.put((Integer) object.get("collection_id"), Math.max(column_width.get((Integer) object.get("collection_id")), reference.get("reason").toString().length() + 2));
                 }
-                String reference_name = reference.get("name").toString() + " (" + reference.get("reference_id").toString() + ")";
-                int old_column_size = columns.get((Integer) object.get("collection_id")).get((String) reference.get("reason")).size();
-                columns.get((Integer) object.get("collection_id")).get((String) reference.get("reason")).add(reference_name);
-                int new_column_size = columns.get((Integer) object.get("collection_id")).get((String) reference.get("reason")).size();
+                String name = contents_map.get((Integer) reference.get("reference_collection_id")).get((Integer) reference.get("reference_id")).get("name");
+                String reference_name = name + " (" + reference.get("reference_id").toString() + ")";
+                int old_column_size = columns.get((Integer) object.get("collection_id")).get(column_name).size();
+                columns.get((Integer) object.get("collection_id")).get(column_name).add(reference_name);
+                int new_column_size = columns.get((Integer) object.get("collection_id")).get(column_name).size();
                 if(new_column_size > old_column_size){
                     rows.put((Integer) object.get("collection_id"), Math.max(rows.get((Integer) object.get("collection_id")), new_column_size));
                     column_width.put((Integer) object.get("collection_id"), Math.max(column_width.get((Integer) object.get("collection_id")), reference_name.length() + 2));
@@ -303,12 +330,23 @@ public class Info {
     public void printEntity(int currentEnv, int id) {
         printEnv(currentEnv);
 
+        //CONTENTS
         for(String content : contents_map.get(currentEnv).get(id).keySet()){
             String value = contents_map.get(currentEnv).get(id).get(content);
             System.out.println(UNDERLINE + content + RESET + ": " + value);
             System.out.println();
         }
 
+        //METADATA
+        for(String tag : metadata.get(currentEnv).get(id).keySet()){
+            System.out.println(UNDERLINE + tag + RESET + ":");
+            for(String value : metadata.get(currentEnv).get(id).get(tag)){
+                System.out.println("   - " + value);
+                System.out.println();
+            }
+        }
+
+        //REFERENCES
         for(Integer reference_env : references_map.get(currentEnv).get(id).keySet()){
             System.out.println(BOLD + UNDERLINE + envs.get(reference_env) + " (" + reference_env + ")" + RESET + ":");
             for(String reason : references_map.get(currentEnv).get(id).get(reference_env).keySet()){
@@ -317,6 +355,7 @@ public class Info {
                     System.out.println("    - " + contents_map.get(reference_env).get(reference_id).get("name") + " (" + reference_id + ")");
                 }
             }
+            System.out.println();
         }
     }
 
