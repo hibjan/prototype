@@ -6,17 +6,30 @@ import java.util.Stack;
 
 public class Filter {
     // ENV (1=Movies) ->
-    // Type (m / r) ->
+    // Type (m / r / x) ->
     // Filter (Genre / Director) ->
     // Values (Action / 108)
-    private HashMap<Integer, HashMap<String, HashMap<String, HashSet<String>>>> filters = new HashMap<>();
+    private HashMap<Integer, HashMap<String, HashMap<String, HashSet<String>>>> filters;
     private Stack<State> states_stack;
+    private Stack<Integer> envs_stack;
     private State prev;
 
     public Filter(boolean isEnv, int currentEnv, int currentEnt){
         this.filters = new HashMap<>();
         this.states_stack = new Stack<>();
+        this.envs_stack = new Stack<>();
+        newEnv(currentEnv);
         this.prev = new State(isEnv, currentEnv, currentEnt, this.filters);
+    }
+
+    public void newEnv(int env){
+        if(!this.envs_stack.isEmpty()){
+            Integer last_env = envs_stack.pop();
+            if(last_env != env){
+                envs_stack.push(last_env);
+            }
+        }
+        envs_stack.push(env);
     }
 
     public void saveState(boolean isEnv, int currentEnv, int currentEnt) {
@@ -25,9 +38,12 @@ public class Filter {
     }
 
     public State prevState(){
-        State prev_state = states_stack.pop();
-        this.filters = prev_state.getFilters();
-        this.prev = prev_state;
+        State prev_state = this.prev;
+        if(!states_stack.isEmpty()) {
+            prev_state = states_stack.pop();
+            this.filters = prev_state.getFilters();
+            this.prev = prev_state;
+        }
         return prev_state;
     }
 
@@ -49,6 +65,14 @@ public class Filter {
 
     public void removeReferenceFilter(Integer current_env, String element, String value){
         removeFilter(current_env, element, value, "r");
+    }
+
+    public void addReasonFilter(Integer current_env, String element, String value){
+        addFilter(current_env, element, value, "x");
+    }
+
+    public void removeReasonFilter(Integer current_env, String element, String value){
+        removeFilter(current_env, element, value, "x");
     }
 
     private void addFilter(Integer current_env, String element, String value, String type){

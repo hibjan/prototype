@@ -40,6 +40,16 @@ public class State {
     }
 
     public HashMap<Integer, HashMap<String, HashMap<String, HashSet<String>>>> getFilters() {
-        return this.filters;
+        HashMap<Integer, HashMap<String, HashMap<String, HashSet<String>>>> filters_copy = new HashMap<>();
+        for(Integer env_filter : this.filters.keySet()) {
+            filters_copy.put(env_filter, new HashMap<>());
+            for (String type : this.filters.get(env_filter).keySet()) {
+                filters_copy.get(env_filter).put(type, new HashMap<>());
+                for (String filter : this.filters.get(env_filter).get(type).keySet()) {
+                    filters_copy.get(env_filter).get(type).put(filter, new HashSet<>(filters.get(env_filter).get(type).get(filter)));
+                }
+            }
+        }
+        return filters_copy;
     }
 }

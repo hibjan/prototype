@@ -22,13 +22,19 @@ add_rfilter env->tag=value  -> adds reference filter (2->Director=108)
 
 rm_rfilter env->tag=value   -> removes reference filter (2->Director=108)
 
+add_xfilter env=value       -> adds reference filter (2=Director)
+
+rm_xfilter env=value   -> removes reference filter (2=Director)
+
 select ent=value            -> shows entity details (ent=122)
 
 follow env->id              -> follow entity details (1->122)
 
 select env=value            -> show environment entities (env=1, env=this)
 
-goback                      -> restores last environment or entity
+restore                     -> restores last state
+
+goback                      -> goes to last environment viewed
 
 exit                        -> stops program
 
@@ -41,6 +47,8 @@ public class Main {
         int current_ent = -1;
         boolean env = true;
 
+        boolean error = false;
+
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
         Info info = new Info(loadJSON());
@@ -48,12 +56,16 @@ public class Main {
 
         while (true) {
 
-            if(env){
-                info.printColumns(current_env, filter.getCurrent());
-                info.printEntities(current_env, filter.getCurrent());
+            if(error) {
+                error = false;
             }
-            else {
-                info.printEntity(current_env, current_ent);
+            else{
+                if (env) {
+                    info.printColumns(current_env, filter.getCurrent());
+                    info.printEntities(current_env, filter.getCurrent());
+                } else {
+                    info.printEntity(current_env, current_ent);
+                }
             }
 
             System.out.print("\nEnter command: ");
@@ -89,6 +101,7 @@ public class Main {
                                 if(!argument_parts[1].equals("this")){
                                     current_env = int_value;
                                 }
+                                filter.newEnv(current_env);
                                 break;
                             case "ent":
                                 env = false;
@@ -106,6 +119,7 @@ public class Main {
                         int id = Integer.parseInt(argument_parts[1]);
                         current_env = new_env;
                         current_ent = id;
+                        filter.newEnv(current_env);
                         break;
 
                     case "add_mfilter":
@@ -140,19 +154,43 @@ public class Main {
                         filter.removeReferenceFilter(int_value, element, value);
                         break;
 
-                    case "goback":
+
+                    case "add_xfilter":
+                        argument_parts = argument.split("=", 2);
+                        int_value = Integer.parseInt(argument_parts[0]);
+                        value = argument_parts[1];
+                        filter.addReasonFilter(int_value, value, String.valueOf(current_env));
+                        current_env = int_value;
+                        filter.newEnv(current_env);
+                        break;
+
+                    case "rm_xfilter":
+                        argument_parts = argument.split("=", 2);
+                        int_value = Integer.parseInt(argument_parts[0]);
+                        value = argument_parts[1];
+                        filter.removeReasonFilter(int_value, value, String.valueOf(current_env));
+                        break;
+
+                    case "restore":
                         back = true;
                         State prev_state = filter.prevState();
                         env = prev_state.getIsEnv();
                         current_env = prev_state.getCurrentEnv();
                         current_ent = prev_state.getCurrentEnt();
+                        filter.newEnv(current_env);
+                        break;
+
+                    case "goback":
+
+
                         break;
 
                     default:
-                        System.out.println("Invalid command. Try again.");
+                        error = true;
+                        System.out.println("\nInvalid command. Try again.");
                 }
 
-                if(!back){
+                if(!back && !error){
                     filter.saveState(env, current_env, current_ent);
                 }
             }

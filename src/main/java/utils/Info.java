@@ -25,8 +25,13 @@ public class Info {
     // Entity ID (1="X") ->
     // ENV Reference ID (2=People) ->
     // Reason ("Actor") ->
-    // Set of IDs from ENV Reference (Actors reference by X)
+    // Set of IDs from ENV Reference (Actors referenced by X)
     private HashMap<Integer, HashMap<Integer, HashMap<Integer, HashMap<String, HashSet<Integer>>>>> references_map;
+    // ENV (1=Movies) ->
+    // ENV Reference ID (2=People) ->
+    // Reason ("Actor") ->
+    // Set of IDs from ENV Reference (Actors)
+    private HashMap<Integer, HashMap<Integer, HashMap<String, HashSet<Integer>>>> references_reason_map;
     // ENV (1=Movies) ->
     // Column ->
     // Set of ID-Name
@@ -55,6 +60,7 @@ public class Info {
         this.metadata_map = new HashMap<>();
         this.metadata = new HashMap<>();
         this.references_map = new HashMap<>();
+        this.references_reason_map = new HashMap<>();
 
         this.columns = new HashMap<>();
         this.column_type = new HashMap<>();
@@ -75,6 +81,7 @@ public class Info {
             metadata_map.put((Integer) collection.get("id"), new HashMap<>());
             metadata.put((Integer) collection.get("id"), new HashMap<>());
             references_map.put((Integer) collection.get("id"), new HashMap<>());
+            references_reason_map.put((Integer) collection.get("id"), new HashMap<>());
 
             columns.put((Integer) collection.get("id"), new HashMap<>());
             column_type.put((Integer) collection.get("id"), new HashMap<>());
@@ -158,6 +165,20 @@ public class Info {
                 }
 
                 references_map.get((Integer) object.get("collection_id")).get((Integer) object.get("id")).get((Integer) reference.get("reference_collection_id")).get((String) reference.get("reason")).add((Integer) reference.get("reference_id"));
+
+                //Reason map
+
+                if (!references_reason_map.get((Integer) object.get("collection_id")).containsKey((Integer) reference.get("reference_collection_id"))) {
+                    references_reason_map.get((Integer) object.get("collection_id")).put((Integer) reference.get("reference_collection_id"), new HashMap<>());
+                }
+
+                if (!references_reason_map.get((Integer) object.get("collection_id")).get((Integer) reference.get("reference_collection_id")).containsKey((String) reference.get("reason"))) {
+                    references_reason_map.get((Integer) object.get("collection_id")).get((Integer) reference.get("reference_collection_id")).put((String) reference.get("reason"), new HashSet<>());
+                }
+
+                references_reason_map.get((Integer) object.get("collection_id")).get((Integer) reference.get("reference_collection_id")).get((String) reference.get("reason")).add((Integer) reference.get("reference_id"));
+
+
             }
         }
 
@@ -187,6 +208,23 @@ public class Info {
                     rows.put((Integer) object.get("collection_id"), Math.max(rows.get((Integer) object.get("collection_id")), new_column_size));
                     column_width.put((Integer) object.get("collection_id"), Math.max(column_width.get((Integer) object.get("collection_id")), reference_name.length() + 2));
                 }
+
+                //Reason
+                if(!columns.get((Integer) object.get("collection_id")).containsKey("Reason")) {
+                    columns.get((Integer) object.get("collection_id")).put("Reason", new TreeSet<>());
+                    column_type.get((Integer) object.get("collection_id")).put("Reason", "x");
+                    column_width.put((Integer) object.get("collection_id"), Math.max(column_width.get((Integer) object.get("collection_id")), 6));
+                }
+
+                String reason_name = (String) reference.get("reason") + " (" + reference.get("reference_collection_id").toString() + ")";
+                old_column_size = columns.get((Integer) object.get("collection_id")).get("Reason").size();
+                columns.get((Integer) object.get("collection_id")).get("Reason").add(reason_name);
+                new_column_size = columns.get((Integer) object.get("collection_id")).get("Reason").size();
+                if(new_column_size > old_column_size){
+                    rows.put((Integer) object.get("collection_id"), Math.max(rows.get((Integer) object.get("collection_id")), new_column_size));
+                    column_width.put((Integer) object.get("collection_id"), Math.max(column_width.get((Integer) object.get("collection_id")), reason_name.length() + 2));
+                }
+
                 //column
             }
         }
@@ -228,18 +266,41 @@ public class Info {
                 }
 
                 if(!col_name.isEmpty() && filters.containsKey(env) && column_type.get(env).containsKey(column)){
-                    if(column_type.get(env).get(column).equals("m") && filters.get(env).containsKey("m") && filters.get(env).get("m").containsKey(column) && filters.get(env).get("m").get(column).contains(col_name)){
-                        col_name =  "* " + col_name;
-                    }
-                    else if(column_type.get(env).get(column).equals("r")) {
-                        int start = col_name.indexOf('(') + 1;
-                        int end = col_name.indexOf(')');
-
-                        String number = col_name.substring(start, end);
-
-                        if(filters.get(env).containsKey("r") && filters.get(env).get("r").containsKey(column) && filters.get(env).get("r").get(column).contains(number)){
-                            col_name =  "* " + col_name;
+                    switch (column_type.get(env).get(column)) {
+                        case "m" ->{
+                            if(filters.get(env).containsKey("m") && filters.get(env).get("m").containsKey(column) && filters.get(env).get("m").get(column).contains(col_name)){
+                                col_name =  "* " + col_name;
+                            }
                         }
+
+                        //NEVER ENTERS HERE BECAUSE R AND X HAVE REFERENCE_ID OF NOT CURRENT
+                        // TODO maybe have column_env in other to do the indexing
+
+                        /*
+                        case "r" -> {
+                            int start = col_name.indexOf('(') + 1;
+                            int end = col_name.indexOf(')');
+
+                            String number = col_name.substring(start, end);
+
+                            if(filters.get(env).containsKey("r") && filters.get(env).get("r").containsKey(column) && filters.get(env).get("r").get(column).contains(number)){
+                                col_name =  "* " + col_name;
+                            }
+                        }
+                        case "x" -> {
+                            int start = col_name.indexOf('(') + 1;
+                            int end = col_name.indexOf(')');
+
+                            Integer number = Integer.parseInt(col_name.substring(start, end));
+
+                            int index = col_name.indexOf('(');
+                            String reason = col_name.substring(0, index-1);
+
+                            if(filters.get(number).containsKey("x") && filters.get(number).get("x").containsKey(reason) && filters.get(number).get("x").get(reason).contains(String.valueOf(env))){
+                                col_name =  "* " + col_name;
+                            }
+                        }
+                        */
                     }
                 }
 
@@ -266,47 +327,74 @@ public class Info {
             for(Integer env_filter : filters.keySet()){
                 for(String type : filters.get(env_filter).keySet()){
                     for(String filter : filters.get(env_filter).get(type).keySet()){
-                        for(String value : filters.get(env_filter).get(type).get(filter)){
-                            if(type.equals("m")){
-                                if(env_filter.equals(env)){
-                                    if(result.isEmpty()){
-                                        result = new HashSet<>(metadata_map.get(env_filter).get(filter).get(value));
-                                    }
-                                    else {
-                                        result.retainAll(metadata_map.get(env_filter).get(filter).get(value));
-                                    }
-                                }
-                                else {
-                                    HashSet<Integer> trans = new HashSet<>();
-                                    for(Integer id : metadata_map.get(env_filter).get(filter).get(value)){
-                                        for(String reason : references_map.get(env_filter).get(id).get(env).keySet()){
-                                            if(trans.isEmpty()){
-                                                trans = new HashSet<>(references_map.get(env_filter).get(id).get(env).get(reason));
-                                            }
-                                            else {
-                                                trans.addAll(references_map.get(env_filter).get(id).get(env).get(reason));
-                                            }
+                        for (String value : filters.get(env_filter).get(type).get(filter)) {
+                            switch (type) {
+                                case "m" -> {
+                                    if (env_filter.equals(env)) {
+                                        if (result.isEmpty()) {
+                                            result = new HashSet<>(metadata_map.get(env_filter).get(filter).get(value));
+                                        }
+                                        else {
+                                            result.retainAll(metadata_map.get(env_filter).get(filter).get(value));
                                         }
                                     }
-                                    if(result.isEmpty()){
-                                        result = trans;
-                                    }
                                     else {
-                                        result.retainAll(trans);
+                                        HashSet<Integer> trans = new HashSet<>();
+                                        for (Integer id : metadata_map.get(env_filter).get(filter).get(value)) {
+                                            for (String reason : references_map.get(env_filter).get(id).get(env).keySet()) {
+                                                if (trans.isEmpty()) {
+                                                    trans = new HashSet<>(references_map.get(env_filter).get(id).get(env).get(reason));
+                                                } else {
+                                                    trans.addAll(references_map.get(env_filter).get(id).get(env).get(reason));
+                                                }
+                                            }
+                                        }
+                                        if (result.isEmpty()) {
+                                            result = trans;
+                                        }
+                                        else {
+                                            result.retainAll(trans);
+                                        }
                                     }
                                 }
-                            }
-                            else if(type.equals("r")){
-                                if(!env_filter.equals(env)){
-                                    if(result.isEmpty()){
-                                        result = new HashSet<>(references_map.get(env_filter).get(Integer.parseInt(value)).get(env).get(filter));
+                                case "r" -> {
+                                    if (!env_filter.equals(env)) {
+                                        if (result.isEmpty()) {
+                                            result = new HashSet<>(references_map.get(env_filter).get(Integer.parseInt(value)).get(env).get(filter));
+                                        }
+                                        else {
+                                            result.retainAll(references_map.get(env_filter).get(Integer.parseInt(value)).get(env).get(filter));
+                                        }
                                     }
                                     else {
-                                        result.retainAll(references_map.get(env_filter).get(Integer.parseInt(value)).get(env).get(filter));
+                                        selections.add(Integer.parseInt(value));
                                     }
                                 }
-                                else {
-                                    selections.add(Integer.parseInt(value));
+                                case "x" -> {
+                                    if (!env_filter.equals(env)) {
+                                        HashSet<Integer> trans = new HashSet<>();
+                                        for (Integer id : references_reason_map.get(Integer.parseInt(value)).get(env_filter).get(filter)) {
+                                            for (String reason : references_map.get(env_filter).get(id).get(env).keySet()) {
+                                                if (reason.equals(filter)) {
+                                                    if (trans.isEmpty()) {
+                                                        trans = new HashSet<>(references_map.get(env_filter).get(id).get(env).get(reason));
+                                                    }
+                                                    else {
+                                                        trans.addAll(references_map.get(env_filter).get(id).get(env).get(reason));
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        if (result.isEmpty()) {
+                                            result = trans;
+                                        }
+                                        else {
+                                            result.retainAll(trans);
+                                        }
+                                    }
+                                    else {
+                                        selections.addAll(references_reason_map.get(Integer.parseInt(value)).get(env_filter).get(filter));
+                                    }
                                 }
                             }
                         }
